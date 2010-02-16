@@ -1,0 +1,4 @@
+firebird2.1-super	shared/firebird/sysdba_password/new_password	password	phpbb
+firebird2.1-super	shared/firebird/sysdba_password/upgrade_reconfigure	password	phpbb
+firebird2.1-super	shared/firebird/sysdba_password/first_install	password	phpbb
+firebird2.1-super	shared/firebird/enabled							boolean		true

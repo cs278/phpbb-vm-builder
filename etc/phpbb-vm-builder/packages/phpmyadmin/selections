@@ -1,0 +1,41 @@
+#phpmyadmin	phpmyadmin/app-password-confirm	password	
+#
+#phpmyadmin	phpmyadmin/password-confirm	password	
+#phpmyadmin	phpmyadmin/setup-password	password	
+# MySQL application password for phpmyadmin:
+
+#phpmyadmin	phpmyadmin/remove-error	select	abort
+#phpmyadmin	phpmyadmin/missing-db-package-error	select	abort
+#phpmyadmin	phpmyadmin/setup-username	string	admin
+# MySQL username for phpmyadmin:
+
+#phpmyadmin	phpmyadmin/install-error	select	abort
+# Host running the MySQL server for phpmyadmin:
+#phpmyadmin	phpmyadmin/remote/newhost	string	
+# Host name of the MySQL database server for phpmyadmin:
+#phpmyadmin	phpmyadmin/remote/host	select	
+#phpmyadmin	phpmyadmin/upgrade-error	select	abort
+
+#phpmyadmin	phpmyadmin/remote/port	string	
+#phpmyadmin	phpmyadmin/dbconfig-remove	boolean	
+#phpmyadmin	phpmyadmin/passwords-do-not-match	error	
+# Connection method for MySQL database of phpmyadmin:
+
+phpmyadmin	phpmyadmin/dbconfig-install	boolean	true
+phpmyadmin	phpmyadmin/dbconfig-reinstall	boolean	false
+phpmyadmin	phpmyadmin/dbconfig-upgrade	boolean	true
+phpmyadmin	phpmyadmin/upgrade-backup	boolean	false
+
+# Do you want to purge the database for phpmyadmin?
+phpmyadmin	phpmyadmin/purge	boolean	false
+
+phpmyadmin	phpmyadmin/database-type	select	mysql
+phpmyadmin	phpmyadmin/reconfigure-webserver	multiselect	apache2, lighttpd
+
+phpmyadmin	phpmyadmin/db/app-user	string	phpmyadmin
+phpmyadmin	phpmyadmin/db/dbname	string	phpmyadmin
+#phpmyadmin	phpmyadmin/mysql/app-pass	password	o3ITRUL4ktlF
+
+phpmyadmin	phpmyadmin/mysql/method	select	unix socket
+phpmyadmin	phpmyadmin/mysql/admin-user	string	root
+phpmyadmin	phpmyadmin/mysql/admin-pass	password	phpbb
