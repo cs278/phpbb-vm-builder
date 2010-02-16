@@ -1,0 +1,5 @@
+#!/bin/sh
+# This script is ran the first time a user logs in
+
+#give the opportunity to change the keyboard
+#sudo dpkg-reconfigure console-setup
