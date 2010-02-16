@@ -1,0 +1,211 @@
+#!/bin/sh
+
+HOSTNAME="phpbb-vm0";
+MIRROR="http://archive.ubuntu.com/ubuntu";
+USER="phpbb";
+PASSWORD=$USER;
+NAME="phpBB";
+HYPERVISOR="vbox";
+SUITE="karmic";
+TIMEZONE=$(cat /etc/timezone);
+
+BOOT="boot.sh";
+COPY="copy";
+
+HTTPD="apache";
+MEMCACHE="";
+APC="";
+XCACHE="";
+DBMS="firebird";
+
+PACKAGES_BUILD="
+bash-completion
+debconf-utils
+vim
+nano
+screen
+curl
+subversion
+";
+PACKAGES="
+openssh-server
+devscripts
+php5-dev
+php5-cli
+php5-gd
+php5-curl
+";
+
+case "$HTTPD" in
+	apache)
+		PACKAGES+=" libapache2-mod-php5";
+	;;
+
+	light*)
+		PACKAGES+="";
+	;;
+
+	nginx*)
+		PACKAGES+="";
+	;;
+
+	*)
+		echo "Unsupported HTTPD";
+		exit 1;
+	;;
+esac
+
+case "$DBMS" in
+	mysql*)
+		PACKAGES+=" php5-mysql";
+		PACKAGES+=" mysql-server phpmyadmin";
+	;;
+
+	sqlite)
+		PACKAGES+=" php5-sqlite sqlite";
+	;;
+
+	firebird)
+		PACKAGES+=" php5-interbase";
+		PACKAGES+=" firebird2.1-super";
+	;;
+
+	mssql)
+		PACKAGES+="";
+	;;
+
+	oracle)
+		PACKAGES+="";
+	;;
+
+	postgre)
+		PACKAGES+="";
+	;;
+
+	*)
+		echo "Unsupported DBMS";
+		exit 1;
+	;;
+esac
+
+if [ -n "$APC" ]; then
+	PACKAGES+=" php-apc";
+fi
+
+if [ -n "$MEMCACHE" ]; then
+	PACKAGES+=" php5-memcache memcached";
+fi
+
+function include_file()
+{
+	SRC=$1;
+	NAME=$(basename "$SRC");
+
+	if [ -n "$2" ]; then
+		DST="/root/${2//\//_}";
+	else
+		if [ "${2:0:1}" != "/" ]; then
+			DST="/root/$2";
+		else
+			DST=$2;
+		fi
+	fi
+
+	echo "$SRC $DST" >> $COPY;
+	echo -n $DST;
+}
+
+function debconf_set()
+{
+	PACKAGE=$1;
+	FILE="packages/$PACKAGE/selections";
+
+	if [ -e $FILE ]; then
+		DEST=$(include_file $FILE "$PACKAGE.selections");
+		echo "debconf-set-selections $DEST >> /root/boot.log" >> $BOOT;
+	fi
+}
+
+function boot_install_pre()
+{
+	PACKAGE=$1;
+	FILE="packages/$PACKAGE/install.pre";
+
+	if [ -e $FILE ]; then
+		cat $FILE >> $BOOT;
+	fi;
+}
+
+function boot_install()
+{
+	PACKAGE=$1;
+
+	echo "# Install '$PACKAGE'" >> $BOOT;
+	echo "" >> $BOOT;
+
+	debconf_set $PACKAGE;
+
+	boot_install_pre $PACKAGE;
+
+	echo "apt-get install -y --force-yes $PACKAGE >> /root/boot.log" >> $BOOT;
+	echo "dpkg-reconfigure --unseen-only --priority=critical $PACKAGE >> /root/boot.log" >> $BOOT;
+
+	boot_install_post $PACKAGE;
+
+	echo "" >> $BOOT;
+	echo "# Done installing '$PACKAGE'" >> $BOOT;
+	echo "" >> $BOOT;
+}
+
+function boot_install_post()
+{
+	PACKAGE=$1;
+	FILE="packages/$PACKAGE/install.post";
+
+	if [ -e $FILE ]; then
+		cat $FILE >> $BOOT;
+	fi;
+}
+
+OPTS="";
+
+for PACKAGE in ${PACKAGES_BUILD}; do
+	OPTS+=" --addpkg=$PACKAGE";
+done
+
+BOOT_FILE="$BOOT";
+BOOT=$(mktemp);
+cat $BOOT_FILE > $BOOT;
+echo "touch /root/boot.log" >> $BOOT;
+echo "" >> $BOOT;
+
+COPY_FILE="$COPY";
+COPY=$(mktemp);
+cat $COPY_FILE > $COPY;
+
+for PACKAGE in $PACKAGES; do
+	boot_install $PACKAGE;
+done
+
+cat "$BOOT_FILE.tail" >> $BOOT;
+
+#cat $COPY $BOOT; rm $COPY $BOOT; exit;
+
+sudo /home/chris/projects/ubuntu/vmbuilder/karmic-0.12/ubuntu-vm-builder $HYPERVISOR $SUITE \
+--tmpfs - \
+--firstboot=$BOOT \
+--firstlogin=login.sh \
+--copy=$COPY \
+--addpkg=acpid \
+--addpkg unattended-upgrades \
+--user=$USER --name="$NAME" --pass="$PASSWORD" \
+--hostname=$HOSTNAME \
+--verbose \
+--debug \
+--mac="08:00:27:61:ED:B3" \
+--mirror=$MIRROR \
+--security-mirror=$MIRROR \
+--timezone=$TIMEZONE \
+$OPTS;
+
+rm $BOOT $COPY;
