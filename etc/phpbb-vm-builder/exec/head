@@ -1,6 +1,4 @@
 #!/bin/bash
-# This script will run the first time the virtual machine boots
-# It is ran as root.
 
 # Wait for network
 function network_test()
@@ -12,7 +10,7 @@ function network_test()
 network_test;
 
 while [ $? -gt 0 ]; do
-	echo "Waiting for network..." >> /dev/console
+	echo "Waiting for network..."
 	sleep 1;
 	network_test;
 done;
