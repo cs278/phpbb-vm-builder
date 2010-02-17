@@ -16,6 +16,11 @@ echo "Installing phpBB...";
 
 chmod 644 /var/www/config.php
 
+# Clean out the package caches to reduce space used
+apt-get clean
+rm /var/cache/apt/pkgcache.bin
+rm /var/cache/apt/srcpkgcache.bin
+
 echo Done >> /dev/console
 sleep 1
 echo Rebooting >> /root/boot.log
