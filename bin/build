@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 HOSTNAME="phpbb-vm0";
 MIRROR="http://archive.ubuntu.com/ubuntu";
@@ -9,8 +9,9 @@ HYPERVISOR="vbox";
 SUITE="karmic";
 TIMEZONE=$(cat /etc/timezone);
 
-BOOT="boot.sh";
-COPY="copy";
+CONFIG=$(readlink -f "$(dirname $0)/../etc/phpbb-vm-builder");
+BOOT="$CONFIG/boot";
+COPY="$CONFIG/copy.conf";
 
 HTTPD="apache";
 MEMCACHE="";
@@ -117,7 +118,7 @@ function include_file()
 function debconf_set()
 {
 	PACKAGE=$1;
-	FILE="packages/$PACKAGE/selections";
+	FILE="$CONFIG/packages/$PACKAGE/selections";
 
 	if [ -e $FILE ]; then
 		DEST=$(include_file $FILE "$PACKAGE.selections");
@@ -128,7 +129,7 @@ function debconf_set()
 function boot_install_pre()
 {
 	PACKAGE=$1;
-	FILE="packages/$PACKAGE/install.pre";
+	FILE="$CONFIG/packages/$PACKAGE/install.pre";
 
 	if [ -e $FILE ]; then
 		cat $FILE >> $BOOT;
@@ -159,7 +160,7 @@ function boot_install()
 function boot_install_post()
 {
 	PACKAGE=$1;
-	FILE="packages/$PACKAGE/install.post";
+	FILE="$CONFIG/packages/$PACKAGE/install.post";
 
 	if [ -e $FILE ]; then
 		cat $FILE >> $BOOT;
@@ -172,9 +173,9 @@ for PACKAGE in ${PACKAGES_BUILD}; do
 	OPTS+=" --addpkg=$PACKAGE";
 done
 
-BOOT_FILE="$BOOT";
+BOOT_DIR="$BOOT";
 BOOT=$(mktemp);
-cat $BOOT_FILE > $BOOT;
+cat "$BOOT_DIR/head" > $BOOT;
 echo "touch /root/boot.log" >> $BOOT;
 echo "" >> $BOOT;
 
@@ -186,7 +187,7 @@ for PACKAGE in $PACKAGES; do
 	boot_install $PACKAGE;
 done
 
-cat "$BOOT_FILE.tail" >> $BOOT;
+cat "$BOOT_DIR/tail" >> $BOOT;
 
 #cat $COPY $BOOT; rm $COPY $BOOT; exit;
 
