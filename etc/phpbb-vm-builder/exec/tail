@@ -1,0 +1,29 @@
+# Empty out
+find /var/www -mindepth 1 -depth -delete
+
+svn co http://code.phpbb.com/svn/phpbb/branches/phpBB-3_0_0/phpBB/ /var/www/ >> /dev/console
+
+chown -R phpbb: /var/www/
+#chmod -R g+s /var/www/
+chmod 777 /var/www/cache /var/www/store /var/www/files /var/www/images/avatars/upload
+chmod 666 /var/www/config.php
+
+#echo "CREATE DATABASE phpbb;" | /usr/bin/mysql -u root -pphpbb
+#echo -e "CREATE DATABASE '/var/tmp/phpbb.db' PAGE_SIZE = 16384;\nQUIT;\n" | /usr/lib/firebird/2.1/bin/isql -u SYSDBA -p phpbb
+
+echo "Installing phpBB...";
+/usr/bin/php -f /home/phpbb/auto.php
+
+chmod 644 /var/www/config.php
+
+# Clean out the package caches to reduce space used
+apt-get clean
+rm /var/cache/apt/pkgcache.bin
+rm /var/cache/apt/srcpkgcache.bin
+
+echo Done >> /dev/console
+sleep 1
+echo Rebooting >> /root/boot.log
+
+touch /root/firstboot_done
+reboot

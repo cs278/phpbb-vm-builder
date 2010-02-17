@@ -1,0 +1,25 @@
+#!/bin/bash
+# This script will run the first time the virtual machine boots
+# It is ran as root.
+
+# Wait for network
+function network_test()
+{
+	# If both of these go down the web is having a very bad day.
+	ping -c1 www.google.com > /dev/null 2>&1 || ping -c1 news.bbc.co.uk > /dev/null 2>&1
+}
+
+network_test;
+
+while [ $? -gt 0 ]; do
+	echo "Waiting for network..." >> /dev/console
+	sleep 1;
+	network_test;
+done;
+
+sleep 1
+
+DEBIAN_FRONTEND=noninteractive
+export DEBIAN_FRONTEND;
+
+apt-get update
