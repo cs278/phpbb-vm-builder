@@ -12,6 +12,7 @@ TIMEZONE=$(cat /etc/timezone);
 CONFIG=$(readlink -f "$(dirname $0)/../etc/phpbb-vm-builder");
 BOOT="$CONFIG/boot";
 COPY="$CONFIG/copy.conf";
+LOGIN="$CONFIG/login";
 
 HTTPD="apache";
 MEMCACHE="";
@@ -194,7 +195,7 @@ cat "$BOOT_DIR/tail" >> $BOOT;
 sudo /home/chris/projects/ubuntu/vmbuilder/karmic-0.12/ubuntu-vm-builder $HYPERVISOR $SUITE \
 --tmpfs - \
 --firstboot=$BOOT \
---firstlogin=login.sh \
+--firstlogin=$LOGIN \
 --copy=$COPY \
 --addpkg=acpid \
 --addpkg unattended-upgrades \
