@@ -11,6 +11,7 @@ TIMEZONE=$(cat /etc/timezone);
 
 CONFIG=$(readlink -f "$(dirname $0)/../etc/phpbb-vm-builder");
 BOOT="$CONFIG/boot";
+EXEC="$CONFIG/exec";
 COPY="$CONFIG/copy.conf";
 LOGIN="$CONFIG/login";
 
@@ -122,8 +123,7 @@ function debconf_set()
 	FILE="$CONFIG/packages/$PACKAGE/selections";
 
 	if [ -e $FILE ]; then
-		DEST=$(include_file $FILE "$PACKAGE.selections");
-		echo "debconf-set-selections $DEST >> /root/boot.log" >> $BOOT;
+		echo "cat \"$FILE\" | chroot \$1 debconf-set-selections" >> $EXEC;
 	fi
 }
 
@@ -133,7 +133,8 @@ function boot_install_pre()
 	FILE="$CONFIG/packages/$PACKAGE/install.pre";
 
 	if [ -e $FILE ]; then
-		cat $FILE >> $BOOT;
+		#cat $FILE >> $EXEC;
+		echo "chroot \$1 $FILE >> $EXEC";
 	fi;
 }
 
@@ -141,21 +142,21 @@ function boot_install()
 {
 	PACKAGE=$1;
 
-	echo "# Install '$PACKAGE'" >> $BOOT;
-	echo "" >> $BOOT;
+	echo "# Install '$PACKAGE'" >> $EXEC;
+	echo "" >> $EXEC;
 
 	debconf_set $PACKAGE;
 
 	boot_install_pre $PACKAGE;
 
-	echo "apt-get install -y --force-yes $PACKAGE >> /root/boot.log" >> $BOOT;
-	echo "dpkg-reconfigure --unseen-only --priority=critical $PACKAGE >> /root/boot.log" >> $BOOT;
+	echo "chroot \$1 apt-get install -y --force-yes $PACKAGE" >> $EXEC;
+	echo "chroot \$1 dpkg-reconfigure --unseen-only --priority=critical $PACKAGE" >> $EXEC;
 
 	boot_install_post $PACKAGE;
 
-	echo "" >> $BOOT;
-	echo "# Done installing '$PACKAGE'" >> $BOOT;
-	echo "" >> $BOOT;
+	echo "" >> $EXEC;
+	echo "# Done installing '$PACKAGE'" >> $EXEC;
+	echo "" >> $EXEC;
 }
 
 function boot_install_post()
@@ -164,7 +165,8 @@ function boot_install_post()
 	FILE="$CONFIG/packages/$PACKAGE/install.post";
 
 	if [ -e $FILE ]; then
-		cat $FILE >> $BOOT;
+		#cat $FILE >> $EXEC;
+		echo "chroot \$1 $FILE" >> $EXEC;
 	fi;
 }
 
@@ -174,11 +176,16 @@ for PACKAGE in ${PACKAGES_BUILD}; do
 	OPTS+=" --addpkg=$PACKAGE";
 done
 
+EXEC_DIR="$EXEC";
+EXEC=$(mktemp);
+chmod o+x $EXEC;
+cat "$EXEC_DIR/head" > $EXEC;
+
 BOOT_DIR="$BOOT";
 BOOT=$(mktemp);
 cat "$BOOT_DIR/head" > $BOOT;
-echo "touch /root/boot.log" >> $BOOT;
-echo "" >> $BOOT;
+#echo "touch /root/boot.log" >> $BOOT;
+#echo "" >> $BOOT;
 
 COPY_FILE="$COPY";
 COPY=$(mktemp);
@@ -189,14 +196,15 @@ for PACKAGE in $PACKAGES; do
 done
 
 cat "$BOOT_DIR/tail" >> $BOOT;
+cat "$EXEC_DIR/tail" >> $EXEC;
 
-#cat $COPY $BOOT; rm $COPY $BOOT; exit;
-
+cat $COPY; echo; cat $EXEC; echo; cat $BOOT; rm $COPY $BOOT $EXEC; exit;
+#--firstboot=$BOOT \
+#--firstlogin=$LOGIN \
+#--copy=$COPY \
 sudo /home/chris/projects/ubuntu/vmbuilder/karmic-0.12/ubuntu-vm-builder $HYPERVISOR $SUITE \
 --tmpfs - \
---firstboot=$BOOT \
---firstlogin=$LOGIN \
---copy=$COPY \
+--execscript="$EXEC" \
 --addpkg=acpid \
 --addpkg unattended-upgrades \
 --user=$USER --name="$NAME" --pass="$PASSWORD" \
@@ -209,4 +217,4 @@ sudo /home/chris/projects/ubuntu/vmbuilder/karmic-0.12/ubuntu-vm-builder $HYPERV
 --timezone=$TIMEZONE \
 $OPTS;
 
-rm $BOOT $COPY;
+rm $BOOT $COPY $EXEC;
