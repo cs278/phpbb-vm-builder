@@ -1,9 +1,5 @@
-chroot $1 (
-
 echo "ENABLE_SUPER_SERVER=yes" >> /etc/default/firebird2.1-super
 
 dpkg-reconfigure --unseen-only --priority=critical firebird2.1-super
 
 echo -e "CREATE DATABASE '/var/tmp/phpbb.db' PAGE_SIZE = 16384;\nQUIT;\n" | /usr/lib/firebird/2.1/bin/isql -u SYSDBA -p phpbb
-
-);
