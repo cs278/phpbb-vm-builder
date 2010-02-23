@@ -166,7 +166,20 @@ function boot_install_post()
 
 	if [ -e $FILE ]; then
 		#cat $FILE >> $EXEC;
-		echo "chroot \$1 $FILE" >> $EXEC;
+		run_in_target $FILE;
+	fi;
+}
+
+function run_in_target()
+{
+	FILE=$1;
+
+	if [ -e $FILE ]; then
+		echo "TMP=\$(chroot \$1 mktemp)" >> $EXEC;
+		echo "cp $FILE \$TMP" >> $EXEC;
+		echo "chroot \$1 chmod o+x \$TMP" >> $EXEC;
+		echo "chroot \$1 \$TMP" >> $EXEC;
+		echo "chroot \$1 rm \$TMP" >> $EXEC;
 	fi;
 }
 
