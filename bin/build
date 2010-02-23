@@ -134,7 +134,7 @@ function boot_install_pre()
 
 	if [ -e $FILE ]; then
 		#cat $FILE >> $EXEC;
-		echo "chroot \$1 $FILE >> $EXEC";
+		run_in_target $FILE;
 	fi;
 }
 
