@@ -20,4 +20,6 @@ sleep 1
 DEBIAN_FRONTEND=noninteractive
 export DEBIAN_FRONTEND;
 
+mount -t proc proc $1/proc
+
 apt-get update
