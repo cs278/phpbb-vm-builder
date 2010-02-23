@@ -198,7 +198,7 @@ done
 cat "$BOOT_DIR/tail" >> $BOOT;
 cat "$EXEC_DIR/tail" >> $EXEC;
 
-cat $COPY; echo; cat $EXEC; echo; cat $BOOT; rm $COPY $BOOT $EXEC; exit;
+#cat $COPY; echo; cat $EXEC; echo; cat $BOOT; rm $COPY $BOOT $EXEC; exit;
 #--firstboot=$BOOT \
 #--firstlogin=$LOGIN \
 #--copy=$COPY \
