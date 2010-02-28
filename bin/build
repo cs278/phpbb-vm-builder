@@ -133,7 +133,6 @@ function boot_install_pre()
 	FILE="$CONFIG/packages/$PACKAGE/install.pre";
 
 	if [ -e $FILE ]; then
-		#cat $FILE >> $EXEC;
 		run_in_target $FILE;
 	fi;
 }
@@ -165,7 +164,6 @@ function boot_install_post()
 	FILE="$CONFIG/packages/$PACKAGE/install.post";
 
 	if [ -e $FILE ]; then
-		#cat $FILE >> $EXEC;
 		run_in_target $FILE;
 	fi;
 }
@@ -197,8 +195,6 @@ cat "$EXEC_DIR/head" > $EXEC;
 BOOT_DIR="$BOOT";
 BOOT=$(mktemp);
 cat "$BOOT_DIR/head" > $BOOT;
-#echo "touch /root/boot.log" >> $BOOT;
-#echo "" >> $BOOT;
 
 COPY_FILE="$COPY";
 COPY=$(mktemp);
