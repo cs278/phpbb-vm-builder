@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. $(dirname $0)/../share/phpbb-vm-builder/functions.sh;
+
 HOSTNAME="phpbb-vm0";
 MIRROR="http://archive.ubuntu.com/ubuntu";
 USER="phpbb";
