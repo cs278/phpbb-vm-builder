@@ -99,7 +99,7 @@ sudo /home/chris/projects/ubuntu/vmbuilder/karmic-0.12/ubuntu-vm-builder $HYPERV
 --tmpfs - \
 --execscript="$EXEC" \
 --addpkg=acpid \
---addpkg unattended-upgrades \
+--addpkg=unattended-upgrades \
 --user=$USER --name="$NAME" --pass="$PASSWORD" \
 --hostname=$HOSTNAME \
 --verbose \
