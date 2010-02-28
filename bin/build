@@ -1,44 +1,9 @@
 #!/bin/bash
 
-. $(dirname $0)/../share/phpbb-vm-builder/functions.sh;
-
-HOSTNAME="phpbb-vm0";
-MIRROR="http://archive.ubuntu.com/ubuntu";
-USER="phpbb";
-PASSWORD=$USER;
-NAME="phpBB";
-HYPERVISOR="vbox";
-SUITE="karmic";
-TIMEZONE=$(cat /etc/timezone);
-
 CONFIG=$(readlink -f "$(dirname $0)/../etc/phpbb-vm-builder");
-BOOT="$CONFIG/boot";
-EXEC="$CONFIG/exec";
-COPY="$CONFIG/copy.conf";
-LOGIN="$CONFIG/login";
 
-HTTPD="apache";
-MEMCACHE="";
-APC="";
-XCACHE="";
-DBMS="firebird";
-
-PACKAGES_BUILD="
-bash-completion
-debconf-utils
-vim
-nano
-screen
-curl
-subversion
-";
-PACKAGES="
-openssh-server
-php5-dev
-php5-cli
-php5-gd
-php5-curl
-";
+. $(dirname $0)/../share/phpbb-vm-builder/functions.sh;
+. "$CONFIG/defaults";
 
 case "$HTTPD" in
 	apache)
