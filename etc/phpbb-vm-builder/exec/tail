@@ -8,9 +8,6 @@ chroot $1 chown -R phpbb: /var/www/
 chroot $1 chmod 777 /var/www/cache /var/www/store /var/www/files /var/www/images/avatars/upload
 chroot $1 chmod 666 /var/www/config.php
 
-#echo "CREATE DATABASE phpbb;" | /usr/bin/mysql -u root -pphpbb
-#echo -e "CREATE DATABASE '/var/tmp/phpbb.db' PAGE_SIZE = 16384;\nQUIT;\n" | /usr/lib/firebird/2.1/bin/isql -u SYSDBA -p phpbb
-
 #echo "Installing phpBB...";
 #/usr/bin/php -f /home/phpbb/auto.php
 
