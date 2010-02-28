@@ -48,8 +48,8 @@ function boot_install()
 
 	boot_install_pre $PACKAGE;
 
-	echo "chroot \$1 apt-get install -y --force-yes $PACKAGE" >> $EXEC;
-	echo "chroot \$1 dpkg-reconfigure --unseen-only --priority=critical $PACKAGE" >> $EXEC;
+	echo "chroot \$1 apt-get install -y --force-yes $PACKAGE;" >> $EXEC;
+	echo "chroot \$1 dpkg-reconfigure --unseen-only --priority=critical $PACKAGE;" >> $EXEC;
 
 	boot_install_post $PACKAGE;
 
@@ -73,10 +73,10 @@ function run_in_target()
 	FILE=$1;
 
 	if [ -e $FILE ]; then
-		echo "TMP=\$(chroot \$1 mktemp)" >> $EXEC;
-		echo "cp $FILE \$TMP" >> $EXEC;
-		echo "chroot \$1 chmod o+x \$TMP" >> $EXEC;
-		echo "chroot \$1 \$TMP" >> $EXEC;
-		echo "chroot \$1 rm \$TMP" >> $EXEC;
+		echo "TMP=\$(chroot \$1 mktemp);" >> $EXEC;
+		echo "cp $FILE \$TMP;" >> $EXEC;
+		echo "chroot \$1 chmod o+x \$TMP;" >> $EXEC;
+		echo "chroot \$1 \$TMP;" >> $EXEC;
+		echo "chroot \$1 rm \$TMP;" >> $EXEC;
 	fi;
 }
