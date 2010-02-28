@@ -23,7 +23,7 @@ function debconf_set()
 	FILE="$CONFIG/packages/$PACKAGE/selections";
 
 	if [ -e $FILE ]; then
-		echo "cat \"$FILE\" | chroot \$1 debconf-set-selections" >> $EXEC;
+		echo "cat \"$FILE\" | chroot \$1 debconf-set-selections;" >> $EXEC;
 	fi
 }
 
