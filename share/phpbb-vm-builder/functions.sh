@@ -74,7 +74,7 @@ function run_in_target()
 
 	if [ -e $FILE ]; then
 		echo "TMP=\$(chroot \$1 mktemp);" >> $EXEC;
-		echo "cp $FILE \$TMP;" >> $EXEC;
+		echo "cp $FILE \$1\$TMP;" >> $EXEC;
 		echo "chroot \$1 chmod o+x \$TMP;" >> $EXEC;
 		echo "chroot \$1 \$TMP;" >> $EXEC;
 		echo "chroot \$1 rm \$TMP;" >> $EXEC;
